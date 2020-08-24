@@ -1,14 +1,13 @@
 package part2;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.maxBy;
-
 public class ReducingExample {
     public static void main(String[] args) {
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+
         List<Dish> menu = Arrays.asList(
                 new Dish("pork", false, 800, Dish.Type.MEAT),
                 new Dish("beef", false, 700, Dish.Type.MEAT),
@@ -21,16 +20,19 @@ public class ReducingExample {
                 new Dish("salmon", false, 450, Dish.Type.FISH)
         );
 
-        /** counting 컬렉터를 이용해서 menu의 요소 개수를 선택 **/
-        long howManyDishes = menu.stream().count();
-        System.out.println(howManyDishes);
+        /** reduce 메서드를 이용해서 요소의 합 구하기 **/
+        int sum = numbers.stream().reduce(0, (a, b) -> a + b);
+        sum = numbers.stream().reduce(0, Integer::sum); //  메서드 참조를 이용해서 간결하게 표현
+        Optional<Integer> optionalSum = numbers.stream().reduce(Integer::sum);  //  초깃값을 받지 않고 Optinal 객체 반환도 가능
 
-        /** Comparator 를 인수로 받는 maxBy 컬렉터를 이용해서 칼로리가 가장 높은 dish 를 선택 **/
-        Comparator<Dish> dishCaroriesComparator =
-                Comparator.comparing(Dish::getCalories);
-        Optional<Dish> mostCalorieDish =    //  menu가 비어있을 경우를 위해 Optional 로 처리
-                menu.stream()
-                        .collect(maxBy(dishCaroriesComparator));
-        System.out.println(mostCalorieDish.get().getName());
+        /** reduce 메서드를 이용해서 최대값과 최소값 구하기 **/
+        Optional<Integer> max = numbers.stream().reduce(Integer::max);
+        Optional<Integer> min = numbers.stream().reduce(Integer::min);
+
+        /** map, reduce 메서드를 이용해서 스트림의 요리 개수 계산하기 **/
+        int count = menu.stream()
+                .map(dish -> 1)
+                .reduce(0, Integer::sum);
+        long count2 = menu.stream().count();    //  count로 스트림 요소 세기
     }
 }
